@@ -25,9 +25,7 @@
     let eurovalue = parseFloat(match[0].replace(",", ".").substr(0, match[0].length-1));
     let cryptovalue = eurovalue / currencyvalue;
     cryptovalue = cryptovalue.toFixed(3);
-    console.log(eurovalue, cryptovalue);
-
-
+    // create a fragment to off-dom append a clone and append to orginal element's parent
     let parent = node.parentNode;
     let fragment = new DocumentFragment();
 
@@ -41,7 +39,7 @@
 
     let img = document.createElement("img");  
     img.src = browser.runtime.getURL("icons/symbol_iota.png");
-    img.style.width = "25px";
+    img.style.height = "20px";
     //img.alt = "MIOTA";
 
     span.appendChild(img);
