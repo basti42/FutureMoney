@@ -8,7 +8,7 @@
     <!-- bootstrap css first, then all other custom css -->
     <link rel="stylesheet" href="bootstrap.min.css" />
     <link rel="stylesheet" href="index.css" />
-    <title>FutureMoney</title>
+    <title>FutureMoney - Control Panel</title>
   </head>
   <body>
 
@@ -25,11 +25,6 @@
          <!-- <ul class="navbar-nav mr-auto">
            <li class="nav-item text-muted">Keep an eye on the lurking deadlines</li>
          </ul> -->
-
-         <!-- <form class="form-inline ml-auto">
-           <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-         </form> -->
        </div>
      </nav>
     </header>
@@ -37,20 +32,43 @@
     <!-- MAIN -->
     <main role="main" class="container-fluid d-flex flex-column">
 
+      <!-- CALCULATOR -->
       <form>
-        <div class="input-group p-2">
+        <div class="form-row mt-3">
 
-          <!-- Calculator Area -->
+          <div class="col-md-5 md-3">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="fiat-prepend">€</span>
+              </div>
+              <input type="text" class="form-control" id="fiat-userinput" placeholder="">
+            </div>
+          </div>
+
+           <div class="col-md-5 md-3">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text" id="crypto-prepend">IOTA</div>
+                </div>
+              <input type="text" class="form-control" id="crypto-userinput" placeholder="">
+            </div>
+          </div>
+
+          <div class="col-md-2 mb-3">
+            <button type="submit" class="btn btn-primary mb-2 w-100" id="calc-button">Convert</button>
+          </div>
 
         </div>
-      </form>
+        </form>
 
+      <!-- DIVIDING HEADLINE -->
       <div class="row d-flex flex-row bg-light p-2 justify-content-between">
         <div class="h5 text-muted">Available Cryptocurrencies</div>
       </div>
 
       <div class="row d-flex justify-content-center display-row">
           <ul class="list-group p-2 m-2 col-md-12" id="list-data">
+            <li id="test"></li>
           </ul>
       </div>
 
@@ -61,7 +79,9 @@
       <div class="container">
         <div class="row d-flex flex-row justify-content-start">
           <div class="flex-grow-1 d-flex justify-content-center"></div>
-          <div class="flex-grow-1 d-flex justify-content-center"><a href="#"> Powered by BitPanda</a></div>
+          <div class="flex-grow-1 d-flex justify-content-center">
+            <a href="https://www.bitpanda.com/en"> Powered by BitPanda</a>
+          </div>
           <div class="flex-grow-1 d-flex justify-content-center">version: 0.2-beta</div>
         </div>
       </div>
@@ -73,7 +93,6 @@
     <script src="popper.min.js" crossorigin="anonymous"></script>
     <script src="bootstrap.min.js" crossorigin="anonymous"></script>
 
-    <!-- <script src="app_handler.js"></script>
-    <script src="loop.js"></script> -->
+   <!-- <script src="control-panel.js"></script> -->
   </body>
 </html>
