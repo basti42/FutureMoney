@@ -5,7 +5,7 @@
   "version": "0.1",
 
   "description": "The future of money could very well be cryptocurrencies. To get a better feel for them, they should be displayed everywhere where fiat money is displayed.",
-  "homepage_url": "https://github.com/basti42",
+  "homepage_url": "https://github.com/basti42/FutureMoney",
 
   "icons": {
     "48": "icons/futuremoney48px.png",
@@ -18,8 +18,7 @@
   ],
   "browser_action": {
     "default_icon" : "icons/futuremoney48px.png",
-    "default_title" : "FutureMoney",
-    "default_popup": "popup/index.html"
+    "default_title" : "FutureMoney"
   },
 
   "background": {
