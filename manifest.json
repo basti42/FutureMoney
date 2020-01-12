@@ -22,7 +22,7 @@
   },
 
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js", "control-panel-launcher.js"]
   },
 
   "content_scripts": [
