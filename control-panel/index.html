@@ -16,7 +16,7 @@
       <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light border">
        <a class="navbar-brand" href="#">
          <img src="../icons/futuremoney32px.png" height="28" width="28" />
-         FutureMoney
+         FutureMoney - Control Panel
        </a>
        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
          <span class="navbar-toggler-icon"></span>
@@ -34,27 +34,27 @@
 
       <!-- CALCULATOR -->
       <form>
-        <div class="form-row mt-3">
+        <div class="form-row mt-4">
 
           <div class="col-md-5 md-3">
             <div class="input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text" id="fiat-prepend">€</span>
               </div>
-              <input type="text" class="form-control" id="fiat-userinput" placeholder="">
+              <input type="text" class="form-control" pattern="[0-9.,]*" id="fiat-userinput" placeholder="">
             </div>
           </div>
 
            <div class="col-md-5 md-3">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <div class="input-group-text" id="crypto-prepend">IOTA</div>
+                  <div class="input-group-text" id="crypto-prepend">MIOTA</div>
                 </div>
-              <input type="text" class="form-control" id="crypto-userinput" placeholder="">
+              <input type="text" readonly class="form-control" id="crypto-userinput" placeholder="">
             </div>
           </div>
 
-          <div class="col-md-2 mb-3">
+          <div class="col-md-2 mb-4">
             <button type="submit" class="btn btn-primary mb-2 w-100" id="calc-button">Convert</button>
           </div>
 
@@ -63,10 +63,38 @@
 
       <!-- DIVIDING HEADLINE -->
       <div class="row d-flex flex-row bg-light p-2 justify-content-between">
-        <div class="h5 text-muted">Available Cryptocurrencies</div>
+        <div class="h6">Displayable Cryptocurrencies</div>
+
+        <div class="d-flex flex-row justify-content-between">
+          <div class="text-left font-italic small mr-1">Selected: </div>
+          <div class="text-right" id="current-selected-crypto">MIOTA</div>
+        </div>
+
+        <div class="d-flex flex-row justify-content-betweeb">
+          <div class="text-left font-italic small mr-1">Last updated: </div>
+          <div class="text-right" id="update-date"></div>
+        </div>
+
+
+
       </div>
 
       <div class="row d-flex justify-content-center display-row">
+
+          <table class="table" id="available-cryptos-table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Symbol</th>
+                <th scope="col">EUR [&euro;]</th>
+                <th scope="col">USD [&dollar;]</th>
+                <th scope="col">CHF</th>
+              </tr>
+            </thead>
+            <tbody id="available-cryptos-table-body">
+            </tbody>
+          </table>
+
           <ul class="list-group p-2 m-2 col-md-12" id="list-data">
             <li id="test"></li>
           </ul>
@@ -79,10 +107,8 @@
       <div class="container">
         <div class="row d-flex flex-row justify-content-start">
           <div class="flex-grow-1 d-flex justify-content-center"></div>
-          <div class="flex-grow-1 d-flex justify-content-center">
-            <a href="https://www.bitpanda.com/en"> Powered by BitPanda</a>
-          </div>
-          <div class="flex-grow-1 d-flex justify-content-center">version: 0.2-beta</div>
+          <div class="flex-grow-1 d-flex justify-content-center">Data provided by bitpanda.com</div>
+          <div class="flex-grow-1 d-flex justify-content-center">version: 0.2-alpha</div>
         </div>
       </div>
     </footer>
@@ -93,6 +119,6 @@
     <script src="popper.min.js" crossorigin="anonymous"></script>
     <script src="bootstrap.min.js" crossorigin="anonymous"></script>
 
-   <!-- <script src="control-panel.js"></script> -->
+   <script src="control-panel.js"></script>
   </body>
 </html>

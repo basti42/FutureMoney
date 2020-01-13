@@ -6,3 +6,7 @@ footer {
   height: 5%; background-color: #f0f0f0;
   color: #515151;
 }
+
+.display-row {
+	flex-grow: 1; height: 65vh; overflow: auto;
+}
