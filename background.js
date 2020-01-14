@@ -2,8 +2,9 @@
 
 	const PRICE_TICKER_API = "https://api.bitpanda.com/v1/ticker";
 	const DBNAME = "future-money-data-cache";
-	const DBVERSION = 1;
+	const DBVERSION = 2;
 	const CRYPTOSTORE = "cryptocurrencyvalues";
+	const SETTINGSTORE = "settingstore";
 
 	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 	var db;
@@ -26,11 +27,25 @@
 		    };
 
 		    req.onupgradeneeded = function (evt) {
+		    	db = this.result;
 		      console.log("[INFO] opening DB onupgradeneeded");
+		      // cryptostore
 		      var store = evt.currentTarget.result.createObjectStore(
 		        CRYPTOSTORE, { keyPath: 'id', autoIncrement: true });
-
 		      store.createIndex('id', 'id', { unique: true  });
+		    
+		      // settingstore
+		      var settstore = evt.currentTarget.result.createObjectStore(
+		      	SETTINGSTORE, {keyPath: 'id', autoIncrement: true });
+		      settstore.createIndex('id', 'id', {unique: true });
+		      settstore.createIndex('symbol', 'symbol', { unique: true });
+		      settstore.createIndex('enabled', 'enabled', { unique: true });
+		      // create default entries
+		      settstore.transaction.oncomplete = function(e){
+		      	let objs = db.transaction(SETTINGSTORE, 'readwrite').objectStore(SETTINGSTORE);
+		      	objs.add({ symbol: 'MIOTA', enabled: true });
+		      	console.log("[INFO] added default settings into db.");
+		      };
 		    };
 	}
 
@@ -44,6 +59,24 @@
 	}
 
 
+	async function updateSettings(newsettings){
+		let store = getObjectStore(SETTINGSTORE, 'readwrite');
+		let req = store.get(1);
+		req.onerror = (err) => { handleError(err); }
+		req.onsuccess = (evt) => {
+			let data = evt.target.result;
+			data.symbol = newsettings.symbol;
+			data.enabled = newsettings.enabled;
+			let updatereq = store.put(data);
+			updatereq.onsuccess = (e) => {
+				console.log("[INFO] successfully updated settings.");
+			};
+			updatereq.onerror = (err) => { handleError(err); }
+
+		}
+	}
+
+
 	/**
 	 * 	Add new data from the API to the indexedDB as cache
 	 *	@param {object} obj, the data to be stored
@@ -51,7 +84,7 @@
 	async function addCryptoValues(obj){
 		console.log("[INFO] Adding new data: ", obj);
 		let store = getObjectStore(CRYPTOSTORE, 'readwrite');
-		let req
+		let req;
 		try {
 			req = store.add(obj);			
 		} catch (e) {
@@ -98,12 +131,12 @@
 					let isNewEnough = Math.abs(now - entryDate) < hour;
 					if (isNewEnough){
 						console.log("[INFO] Returning cached data.");
-						sendbackCallback({"date": entry.date, "data": entry.data, "taburl": originalMessage.url});
+						sendbackCallback({"date": entry.date, "data": entry.data, "taburl": originalMessage.url, "originalrequest": originalMessage.request});
 					} else {
 						let date = new Date();
 						let data = await getApiData();
 						console.log("[INFO] Outdated cache, returning new api data");
-						let dataObj = {"date":date, "data":data, "taburl":originalMessage.url};
+						let dataObj = {"date":date, "data":data, "taburl":originalMessage.url, "originalrequest": originalMessage.request};
 						addCryptoValues(dataObj);
 						sendbackCallback(dataObj);
 					}
@@ -113,12 +146,27 @@
 				let date = new Date();
 				let data = await getApiData();
 				console.log("[INFO] No cached results, returning new api data");
-				let dataObj = {"date":date, "data":data, "taburl":originalMessage.url};
+				let dataObj = {"date":date, "data":data, "taburl":originalMessage.url, "originalrequest": originalMessage.request};
 				addCryptoValues(dataObj);
 				sendbackCallback(dataObj);
 			}
 		};
 		countRequest.onerror = (err) => {handleError(err);};
+	}
+
+
+	/**
+	 *	return the stored settings for the application
+	 * 	@param {object} 	originalMessage
+	 * 	@param {function}	sendbackCallback
+	 */
+	async function returnSettings(originalMessage, sendbackCallback){
+		let store = getObjectStore(SETTINGSTORE, 'readonly');
+		let req = store.get(1);
+		req.onsuccess = (evt) => {
+			sendbackCallback({taburl: originalMessage.url, originalrequest: originalMessage.request, settings: evt.target.result});
+		};
+		req.onerror = (err) => { handleError(err); };
 	}
 
 
@@ -151,9 +199,19 @@
 		the requesting tab
 	*/
 	async function handleMessage(message){
-		console.debug("[DEBUG] Message from: ", message.url);	
-		// save a response object and send it back to the requestor
-		await returnCryptoValues(message, sendResponse);
+		console.debug("[DEBUG] Message from: ", message.url);
+		if (message.request === "GETCRYPTOVALUES"){
+			// cache the response object and send it back to the requestor
+			await returnCryptoValues(message, sendResponse);			
+		} else if (message.request === "GETSETTINGS"){
+			// just return the already stored settings
+			await returnSettings(message, sendResponse);
+		} else if (message.request === "UPDATESETTINGS"){
+			// update the settings with the data from the contol panel
+			await updateSettings(message.data);
+		} else {
+			console.error("[ERROR] Unable to handle request from: ", message.url);
+		}
 	}
 
 

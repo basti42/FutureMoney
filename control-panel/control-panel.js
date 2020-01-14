@@ -3,6 +3,7 @@ const allowedSymbols = ["MIOTA"];
 const allowedInputKeys = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 188, 190];
 
 const calcButton = document.querySelector("#calc-button");
+const switchButton = document.querySelector("#enableSwitch");
 const fiatInput = document.querySelector("#fiat-userinput");
 const cryptOutput = document.querySelector("#crypto-userinput");
 
@@ -10,8 +11,10 @@ var currentSymbol = undefined;
 var currentValue = undefined;
 
 
-document.addEventListener("DOMContentLoaded", ()=>{
-	getDataFromBackground();
+document.addEventListener("DOMContentLoaded", async ()=>{
+	await getSettingsFromBackground();
+	await getDataFromBackground();
+
 });
 
 
@@ -44,6 +47,10 @@ function createCryptosTabel(data){
 		if (!allowedSymbols.includes(symbol)){
 			tr.style.color = "lightgrey";
 		}
+		if (symbol === currentSymbol){
+			// highlight the currently selected symbol
+			tr.classList.add("table-primary");
+		}
 		fragment.appendChild(tr);
 	}
 	tbody.appendChild(fragment);
@@ -55,11 +62,31 @@ function setUpdateDate(date){
 }
 
 
+/**
+ *	Apply the settings to the switch button, and remember the current symbol
+ */
+function applySettings(settings){
+	currentSymbol = settings.symbol;
+	switchButton.checked = settings.enabled;
+	console.debug("[DEBUG] setup the control panel according to settings, current symbol: ", currentSymbol);
+}
+
+
 function handleResponse(response){
 	console.log("[INFO] received data from background: ", response);
-	createCryptosTabel(response.data);
-	setUpdateDate(response.date);
-	currentValue = parseFloat(response.data.MIOTA.EUR);
+	if (response.originalrequest === "GETCRYPTOVALUES"){
+		createCryptosTabel(response.data);
+		setUpdateDate(response.date);
+		let c = (currentSymbol === undefined) ? "MIOTA" : currentSymbol;
+		currentValue = parseFloat(response.data[c].EUR);		
+	} else if (response.originalrequest === "GETSETTINGS"){
+		console.debug("[DEBUG] ", response.settings);
+		applySettings(response.settings);	
+	}
+}
+
+function changeBrowserActionIcon(value){
+	let something = "TODO";
 }
 
 
@@ -68,9 +95,14 @@ function handleResponse(response){
   The incomong reponse then triggers the addition
   of DOM elements and display of crypto values
 */
-function getDataFromBackground(){
-	browser.runtime.sendMessage( {"url": window.location.href, "key": "getData" } );
+async function getDataFromBackground(){
+	browser.runtime.sendMessage( {url: window.location.href, request: "GETCRYPTOVALUES" } );
 }
+
+async function getSettingsFromBackground(){
+	browser.runtime.sendMessage({url: window.location.href, request: "GETSETTINGS"});
+}
+
 
 // Listener
 browser.runtime.onMessage.addListener(handleResponse);
@@ -79,7 +111,6 @@ browser.runtime.onMessage.addListener(handleResponse);
 calcButton.addEventListener("click", (event)=>{
 	cryptOutput.value = "";								// clear crypto output
 	let m = fiatInput.value.match(/^\d+[.,]?\d*$/);		// check the input with regex
-	console.log(m, currentValue);
 	if (m !== null){									// convert and set the crypto output
 		cryptOutput.value = parseFloat(m[0].replace(",", ".")) / currentValue;
 	} else {											// clear everything
@@ -88,4 +119,14 @@ calcButton.addEventListener("click", (event)=>{
 	}
 	event.preventDefault();
 });
+
+
+switchButton.addEventListener("change", async (event) => {	// toggle conversion
+	let value = switchButton.checked;
+	let d = { symbol: currentSymbol, enabled: value };
+	await browser.runtime.sendMessage({url: window.location.href, data: d, request: "UPDATESETTINGS"});	
+	// changeBrowserActionIcon(value); // TODO
+});
+
+
 
