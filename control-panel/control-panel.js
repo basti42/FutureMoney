@@ -1,4 +1,4 @@
-
+ 
 const allowedSymbols = ["MIOTA"];
 const allowedInputKeys = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 188, 190];
 
@@ -9,6 +9,7 @@ const cryptOutput = document.querySelector("#crypto-userinput");
 
 var currentSymbol = undefined;
 var currentValue = undefined;
+var cryptodata = undefined;
 
 
 document.addEventListener("DOMContentLoaded", async ()=>{
@@ -23,10 +24,16 @@ function createCryptosTabel(data){
 	let fragment = new DocumentFragment();
 	for (let symbol in data){
 		let tr = document.createElement("tr");
-		// row number		
-		let row = document.createElement("th");
-		row.scope = "col";
-		tr.appendChild(row);
+		// row number / radio button		
+		let rb = document.createElement("th");
+		rb.scope = "col";
+		let circle = document.createElement("div");
+		circle.classList.add("dot");
+		circle.id = symbol;
+		dotApplyEventListener(circle, handleDotClick);
+	    rb.appendChild(circle);
+
+		tr.appendChild(rb);
 		// symbol name
 		let sym = document.createElement("td");
 		sym.innerText = symbol;
@@ -43,10 +50,6 @@ function createCryptosTabel(data){
 		let chf = document.createElement("td");
 		chf.innerText = data[symbol].CHF;
 		tr.appendChild(chf);
-		// apend to fragment
-		if (!allowedSymbols.includes(symbol)){
-			tr.style.color = "lightgrey";
-		}
 		if (symbol === currentSymbol){
 			// highlight the currently selected symbol
 			tr.classList.add("table-primary");
@@ -68,6 +71,7 @@ function setUpdateDate(date){
 function applySettings(settings){
 	currentSymbol = settings.symbol;
 	switchButton.checked = settings.enabled;
+	document.querySelector("#crypto-prepend").innerText = settings.symbol;
 	console.debug("[DEBUG] setup the control panel according to settings, current symbol: ", currentSymbol);
 }
 
@@ -75,6 +79,7 @@ function applySettings(settings){
 function handleResponse(response){
 	console.log("[INFO] received data from background: ", response);
 	if (response.originalrequest === "GETCRYPTOVALUES"){
+		cryptodata = response.data;
 		createCryptosTabel(response.data);
 		setUpdateDate(response.date);
 		let c = (currentSymbol === undefined) ? "MIOTA" : currentSymbol;
@@ -87,6 +92,32 @@ function handleResponse(response){
 
 function changeBrowserActionIcon(value){
 	let something = "TODO";
+}
+
+/**
+ * Refresh the current crypto (symbol and value) on the entire control panel
+ */
+function setAndUpdateCurrentCrypto(symbol){
+	currentSymbol = symbol;
+	currentValue = parseFloat(cryptodata[symbol].EUR);
+	// set the values for the calculator
+	document.querySelector("#crypto-prepend").innerText = currentSymbol;
+	document.querySelector("#fiat-userinput").value = "";
+	document.querySelector("#crypto-userinput").value = "";
+}
+
+
+async function handleDotClick(event){
+	let target = event.target;
+	console.log("Dot was clicked: ", target);
+	// update the settings according to the id = symbol
+	let d = { symbol: target.id, enabled: switchButton.checked };
+	await browser.runtime.sendMessage({url: window.location.href, data: d, request: "UPDATESETTINGS"});	
+	for (let tr of document.querySelectorAll("tbody>tr")){
+		tr.remove();
+	}
+	setAndUpdateCurrentCrypto(d.symbol);
+	createCryptosTabel(cryptodata);
 }
 
 
@@ -129,4 +160,6 @@ switchButton.addEventListener("change", async (event) => {	// toggle conversion
 });
 
 
-
+function dotApplyEventListener(element, func){
+	element.addEventListener("click", func);
+}

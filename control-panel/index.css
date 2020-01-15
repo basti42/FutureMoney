@@ -13,3 +13,21 @@ footer {
 
 #calc-button { cursor: pointer; }
 #enableSwitch { cursor: pointer; }
+
+.dot {
+	width: 30px; height: 30px; border-radius: 15px;
+	border: 2px solid black; transition: background-color 0.3s, border 0.3s;
+}
+
+.dot:hover { 
+	cursor: pointer; background-color: #338DFF; border: 2px solid #338DFF; }
+
+.active-dot {
+	background-color: #93FF33;
+}
+
+tr { transition: background-color 0.3s; }
+
+tbody>tr:hover {
+	background-color: lightgrey;
+}

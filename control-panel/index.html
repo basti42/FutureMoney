@@ -47,7 +47,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text" id="fiat-prepend">€</span>
               </div>
-              <input type="text" class="form-control" pattern="[0-9.,]*" id="fiat-userinput" placeholder="">
+              <input type="text" class="form-control  pl-4" pattern="[0-9.,]*" id="fiat-userinput" placeholder="">
             </div>
           </div>
 
@@ -56,7 +56,7 @@
                 <div class="input-group-prepend">
                   <div class="input-group-text" id="crypto-prepend">MIOTA</div>
                 </div>
-              <input type="text" readonly class="form-control" id="crypto-userinput" placeholder="">
+              <input type="text" readonly class="form-control pl-4" id="crypto-userinput" placeholder="">
             </div>
           </div>
 
@@ -88,9 +88,10 @@
       <div class="row d-flex justify-content-center display-row">
 
           <table class="table" id="available-cryptos-table">
+            <form class="form-check">
             <thead>
               <tr>
-                <th scope="col">#</th>
+                <th scope="col">Select</th>
                 <th scope="col">Symbol</th>
                 <th scope="col">EUR [&euro;]</th>
                 <th scope="col">USD [&dollar;]</th>
@@ -99,7 +100,9 @@
             </thead>
             <tbody id="available-cryptos-table-body">
             </tbody>
+          </form>
           </table>
+
 
           <ul class="list-group p-2 m-2 col-md-12" id="list-data">
             <li id="test"></li>

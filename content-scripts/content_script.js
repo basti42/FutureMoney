@@ -4,11 +4,20 @@
   // getDataFromBackground();
   getSettingsFromBackground();
 
-  const PRICEREGEX = /(\d+[\.,]\d{2}\s?[€£$])/gm;
+  const PRICEREGEX = /(\d+[\.,]\d{2}\s?[€])/gm;
   const PRICESELECTORS = ["span.a-price", "span.a-color-price"];
 
+  // variables set via settings and data from background
+  var SELECTEDSYMBOL = undefined;
+  var CONVERSIONVALUE = undefined;
+
+
+  /**
+   *  iterates over all elements having a class listed
+   *  in PRICESELECTORS
+   */
   function findElements(data, callback){
-    let currencyvalue = parseFloat(data.MIOTA.EUR)
+    let currencyvalue = parseFloat(CONVERSIONVALUE);
     for (let selector of PRICESELECTORS){
       for (let node of document.querySelectorAll(selector)){
         let m = node.innerText.match(PRICEREGEX);
@@ -65,10 +74,13 @@
     console.debug("[DEBUG] response: ", response);
 
     if (response.originalrequest === "GETCRYPTOVALUES"){
+      CONVERSIONVALUE = response.data[SELECTEDSYMBOL].EUR;  // set the current selected conversion value
       findElements(response.data, addCryptoElement);      
     }
     else if (response.originalrequest === "GETSETTINGS"){
       if (response.settings.enabled){
+        SELECTEDSYMBOL = response.settings.symbol;  // set the current selected currency by symbol
+        console.log("[INFO] selected crypto currency: ", SELECTEDSYMBOL);
         getDataFromBackground();
       } else {
         console.log("[INFO] FutureMoney: Conversion of prices is disabled! Turn back on via control panel!");
