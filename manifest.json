@@ -27,7 +27,7 @@
 
   "content_scripts": [
     {
-      "matches": ["*://*.amazon.de/*", "*://*.amazon.fr/*", "*://*.amazon.nl/*"],
+      "matches": ["*://*.amazon.de/*", "*://*.amazon.fr/*", "*://*.amazon.nl/*", "*://*.amazon.es/*", "*://*.amazon.it/*"],
       "js": ["content-scripts/content_script.js"]
     }
   ],
