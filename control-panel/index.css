@@ -26,6 +26,10 @@ footer {
 	background-color: #93FF33;
 }
 
+#modal-opener {
+	cursor: pointer;
+}
+
 tr { transition: background-color 0.3s; }
 
 tbody>tr:hover {

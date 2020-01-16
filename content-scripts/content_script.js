@@ -45,12 +45,12 @@
     }
     span.innerText = cryptovalue;
     span.style.border = "thin solid yellow";
-    span.style.fontSize = "14pt";
+    span.style.fontSize = "13pt";
 
     let img = document.createElement("img");  
-    img.src = browser.runtime.getURL("icons/symbol_iota.png");
+    img.src = browser.runtime.getURL("icons/symbol_" + SELECTEDSYMBOL.toLowerCase() + ".png");
     img.style.height = "20px";
-    //img.alt = "MIOTA";
+    img.alt = SELECTEDSYMBOL;
 
     span.appendChild(img);
     fragment.appendChild(span);

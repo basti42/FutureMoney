@@ -72,6 +72,7 @@ function applySettings(settings){
 	currentSymbol = settings.symbol;
 	switchButton.checked = settings.enabled;
 	document.querySelector("#crypto-prepend").innerText = settings.symbol;
+	document.querySelector("#current-selected-crypto").innerText = currentSymbol;
 	console.debug("[DEBUG] setup the control panel according to settings, current symbol: ", currentSymbol);
 }
 
@@ -104,12 +105,13 @@ function setAndUpdateCurrentCrypto(symbol){
 	document.querySelector("#crypto-prepend").innerText = currentSymbol;
 	document.querySelector("#fiat-userinput").value = "";
 	document.querySelector("#crypto-userinput").value = "";
+	// and anywhere else on the site
+	document.querySelector("#current-selected-crypto").innerText = currentSymbol;
 }
 
 
 async function handleDotClick(event){
 	let target = event.target;
-	console.log("Dot was clicked: ", target);
 	// update the settings according to the id = symbol
 	let d = { symbol: target.id, enabled: switchButton.checked };
 	await browser.runtime.sendMessage({url: window.location.href, data: d, request: "UPDATESETTINGS"});	
