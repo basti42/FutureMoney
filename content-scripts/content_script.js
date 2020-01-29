@@ -6,6 +6,7 @@
 
   const PRICEREGEX = /(\d+[\.,]\d{2}\s?[€])/gm;
   const PRICESELECTORS = ["span.a-price", "span.a-color-price"];
+  const COLORPALETTE = ['#a79e84', '#b7d7e8', '#f9ccac', '#87bdd8', '#f9d5e5'];
 
   // variables set via settings and data from background
   var SELECTEDSYMBOL = undefined;
@@ -18,24 +19,28 @@
    */
   function findElements(data, callback){
     let currencyvalue = parseFloat(CONVERSIONVALUE);
+    let index = 0;  // used for selection of the color
     for (let selector of PRICESELECTORS){
       for (let node of document.querySelectorAll(selector)){
         let m = node.innerText.match(PRICEREGEX);
         if (m !== null){
-          callback(node, currencyvalue);        
+          let color = COLORPALETTE[index % COLORPALETTE.length];
+          index++;
+          callback(node, currencyvalue, color);        
         }
       }      
     }
   }
 
 
-  function addCryptoElement(node, currencyvalue){
+  function addCryptoElement(node, currencyvalue, color){
     // get the euro value and convert it to iota
     let match = node.innerText.match(PRICEREGEX);
     let eurovalue = parseFloat(match[0].replace(",", ".").substr(0, match[0].length-1));
     let cryptovalue = eurovalue / currencyvalue;
     cryptovalue = cryptovalue.toFixed(3);
     // create a fragment to off-dom append a clone and append to orginal element's parent
+    node.style.backgroundColor = color;
     let parent = node.parentNode;
     let fragment = new DocumentFragment();
 
@@ -43,8 +48,9 @@
     for (let cl of node.classList){
       span.classList.add(cl);
     }
+    span.classList.add("tooltip");
     span.innerText = cryptovalue;
-    span.style.border = "thin solid yellow";
+    span.style.backgroundColor = color;
     span.style.fontSize = "13pt";
 
     let img = document.createElement("img");  

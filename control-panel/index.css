@@ -8,7 +8,7 @@ footer {
 }
 
 .display-row {
-	flex-grow: 1; height: 65vh; overflow: auto;
+	flex-grow: 1; height: 67vh; overflow: auto;
 }
 
 #calc-button { cursor: pointer; }
