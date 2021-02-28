@@ -119,25 +119,29 @@
 		let countRequest = store.count();
 		countRequest.onsuccess = async ()=>{
 			let lastIndex = countRequest.result;
-			if (lastIndex > 0){
-				let req = store.get(lastIndex);
+			if (lastIndex > 1){	// check if at least two entries are present in the indexedDB
+				let req = store.getAll( IDBKeyRange.lowerBound(lastIndex-1));
 				req.onsuccess = async () => {
-					let entry = req.result;
+					let entry = req.result;	// this is an array of the latest two entries
+					console.log("TEST: ", entry);
 					let now = new Date().getTime();
 					let hour = 1000 * 60 * 60;
-					let entryDate = entry.date.getTime();
+					let entryDate = entry[1].date.getTime();
 					// console.log("Now: ", now, " - entryDate: ", entryDate, " diff: ", Math.abs(now-entryDate));
 					// console.log("Hour: ", hour);
 					let isNewEnough = Math.abs(now - entryDate) < hour;
 					if (isNewEnough){
 						console.log("[INFO] Returning cached data.");
-						sendbackCallback({"date": entry.date, "data": entry.data, "taburl": originalMessage.url, "originalrequest": originalMessage.request});
+						sendbackCallback({"date": entry[1].date, "data": entry[1].data, "prevDate": entry[0].date, "prevData": entry[0].data,
+										  "taburl": originalMessage.url, "originalrequest": originalMessage.request});
 					} else {
 						let date = new Date();
 						let data = await getApiData();
 						console.log("[INFO] Outdated cache, returning new api data");
 						let dataObj = {"date":date, "data":data, "taburl":originalMessage.url, "originalrequest": originalMessage.request};
 						addCryptoValues(dataObj);
+						dataObj["prevDate"] = entry[0].date;
+						dataObj["prevData"] = entry[0].data;
 						sendbackCallback(dataObj);
 					}
 				};
@@ -148,7 +152,25 @@
 				console.log("[INFO] No cached results, returning new api data");
 				let dataObj = {"date":date, "data":data, "taburl":originalMessage.url, "originalrequest": originalMessage.request};
 				addCryptoValues(dataObj);
-				sendbackCallback(dataObj);
+				let st = getObjectStore(CRYPTOSTORE, 'readonly');
+				let cReq = st.count();
+				cReq.onsuccess = async ()=> {
+					let idx = cReq.result;
+					if (idx > 1){
+						let r = st.get(idx-1);
+						r.onsuccess = async () => {
+							let tmp = r.result;
+							dataObj["prevDate"] = tmp.date;
+							dataObj["prevData"] = tmp.data;
+							sendbackCallback(dataObj);							
+						}
+					} else {
+						dataObj["prevDate"] = date;
+						dataObj["prevData"] = data;
+						sendbackCallback(dataObj);							
+					}
+				}
+
 			}
 		};
 		countRequest.onerror = (err) => {handleError(err);};

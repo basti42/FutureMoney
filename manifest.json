@@ -2,7 +2,7 @@
 
   "manifest_version": 2,
   "name": "FutureMoney",
-  "version": "0.6",
+  "version": "0.7",
 
   "description": "The future of money could very well be cryptocurrencies. To get a better feel for them, they should be displayed everywhere where fiat money is displayed.",
   "homepage_url": "https://github.com/basti42/FutureMoney",
