@@ -20,4 +20,14 @@ If you like this extension please feel free to [rate it](https://addons.mozilla.
 The data for conversion is obtained from [BitPandas Price Ticker](https://api.bitpanda.com/v1/ticker). To avoid spamming this endpoint, a request is cached on the client via IndexedDB. A new request to the API is made only once per hour.  
 The control panel was build using [Bootstrap](https://getbootstrap.com/).  
 
+## Version
+
+#### version 0.7
+* added visualization for the change in value of each crypto. Now the previously stored values are also requested and the percentage change to the current value is displayed. Also with up/down-arrows
+* code-cleanup
+
+#### version 0.6
+* caches requests to the bitpanda api to only make new requests every hour.
+* cosmetic changes
+
 ## FAQ
